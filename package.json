@@ -1,7 +1,7 @@
 {
-  "name": "epserver",
+  "name": "server",
   "version": "1.0.0",
-  "description": "Edgepoint Software NodeJs Express Server",
+  "description": "NodeJs Express Firebase Server",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
