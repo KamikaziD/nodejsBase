@@ -3,7 +3,7 @@ const app = express();
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-var bodyParser = require("body-parser");
+const cors = require("cors");
 
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
@@ -14,8 +14,11 @@ const io = new Server(server, {
     origin: "http://localhost:3000",
   },
 });
+const middleware = require("./middleware/index");
+app.use(middleware.decodeToken);
 
 app.use(express.json());
+app.use(cors());
 
 const router = express.Router();
 
