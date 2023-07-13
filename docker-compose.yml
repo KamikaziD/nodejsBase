@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 services:
   nodeapp:
     container_name: backend
@@ -13,26 +13,29 @@ services:
     ports:
       - "4000:4000"
     links:
-      - mongodb
+      - db
     depends_on:
-      - mongodb
+      - db
     environment:
-      WAIT_HOSTS: mongodb:27017
+      WAIT_HOSTS: db:5432
     networks:
       - node-webapp-network
-  mongodb:
-    container_name: mongodb
-    image: mongo:6.0
-    volumes:
-      - ~/mongo:/data/db
+  db:
+    container_name: postgres
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     ports:
-      - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=app_user
-      - MONGO_INITDB_ROOT_PASSWORD=app_password
-      - MONGO_INITDB_DATABASE=admin
+      - '5432:5432'
+    volumes: 
+      - db:/var/lib/postgresql/data
     networks:
       - node-webapp-network
+volumes:
+  db:
+    driver: local
 networks:
   node-webapp-network:
     driver: bridge

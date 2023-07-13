@@ -5,61 +5,32 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 var bodyParser = require("body-parser");
 
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
   },
 });
 
-const mongoose = require("mongoose");
-mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://app_user:app_password@192.168.88.242:27017/admin");
+app.use(express.json());
 
-var nameSchema = new mongoose.Schema({
-  firstName: String,
-  lastName: String,
-});
-var User = mongoose.model("User", nameSchema);
+const router = express.Router();
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+//********* ROUTE IMPORTS**********//
+const user_routes = require("./routes/User.routes");
 
-//*****ROUTES **********//
 app.get("/", (req, res) => {
-  res.send("Connected to the api");
+  const status = { status: "Running" };
+
+  res.send(status);
 });
+// User Routes
+app.use("/api/users", user_routes);
 
-app.post("/api", async (req, res) => {
-  var myData = new User(req.body);
-  myData
-    .save()
-    .then((item) => {
-      res.send({ msg: "item saved to database", data: item });
-    })
-    .catch((err) => {
-      res.status(400).send("unable to save to database");
-    });
-});
-
-app.get("/api", async (req, res) => {
-  await mongoose.connect(
-    "mongodb://app_user:app_password@192.168.88.242:27017/admin"
-  );
-  mongoose.model("User", User);
-
-  const usr = await User.find({}, "firstName lastName");
-  res.status(200).send({ id: id, data: usr });
-});
-
-app.post("/api/:id", async (req, res) => {
-  const id = req.params.id;
-  console.log("ID", id);
-
-  const usr = await User.findOneAndRemove({ _id: id });
-  res.status(200).send(usr);
-});
-
-//*****ROUTES **********//
+//********* WEB_SOCKET **********//
 
 io.on("connection", (socket) => {
   const connections = [];
