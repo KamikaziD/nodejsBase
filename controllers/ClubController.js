@@ -2,8 +2,8 @@ const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 
-const getUsers = async (req, res) => {
-  await prisma.user
+const getClubs = async (req, res) => {
+  await prisma.club
     .findMany({ include: { profile: true } })
     .then(async (data) => {
       res.json({ data: data });
@@ -16,14 +16,23 @@ const getUsers = async (req, res) => {
     });
 };
 
-const createUser = async (req, res) => {
-  const user = req.body;
-  await prisma.user
+const createClub = async (req, res) => {
+  const club = req.body;
+  await prisma.club
     .create({
       data: {
-        email: user.email,
-        name: user.name,
-        profile: { create: { bio: user.bio } },
+        name: club.name,
+        address: club.address,
+        telephone: club.telephone,
+        email: club.email,
+        location: {
+          create: {
+            location: {
+              latitude: club.location.latitude,
+              longitude: club.location.longitude,
+            },
+          },
+        },
       },
     })
     .then(async (data) => {
@@ -37,11 +46,11 @@ const createUser = async (req, res) => {
     });
 };
 
-const getUser = async (req, res) => {
-  const userID = req.params.userID;
+const getClub = async (req, res) => {
+  const clubID = req.params.clubID;
 
-  await prisma.user
-    .findUnique({ where: { id: parseInt(userID) } })
+  await prisma.club
+    .findUnique({ where: { id: parseInt(clubID) } })
     .then(async (data) => {
       res.json({ data: data });
       await prisma.$disconnect();
@@ -53,12 +62,12 @@ const getUser = async (req, res) => {
     });
 };
 
-const updateUser = async (req, res) => {
-  const userID = req.params.userID;
+const updateClub = async (req, res) => {
+  const clubID = req.params.clubID;
   const data = req.body;
 
-  await prisma.user
-    .update({ where: { id: parseInt(userID) }, data: data })
+  await prisma.club
+    .update({ where: { id: parseInt(clubID) }, data: data })
     .then(async (data) => {
       res.json({ data: data });
       await prisma.$disconnect();
@@ -70,11 +79,11 @@ const updateUser = async (req, res) => {
     });
 };
 
-const deleteUser = async (req, res) => {
-  const userID = req.params.userID;
+const deleteClub = async (req, res) => {
+  const clubID = req.params.clubID;
 
-  await prisma.user
-    .delete({ where: { id: parseInt(userID) } })
+  await prisma.club
+    .delete({ where: { id: parseInt(clubID) } })
     .then(async (data) => {
       res.json({ data: data });
       await prisma.$disconnect();
@@ -87,9 +96,9 @@ const deleteUser = async (req, res) => {
 };
 
 module.exports = {
-  getUsers,
-  getUser,
-  createUser,
-  updateUser,
-  deleteUser,
+  getClubs,
+  getClub,
+  createClub,
+  updateClub,
+  deleteClub,
 };

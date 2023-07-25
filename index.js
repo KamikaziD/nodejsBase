@@ -14,13 +14,11 @@ const io = new Server(server, {
     origin: "http://localhost:3000",
   },
 });
-const middleware = require("./middleware/index");
-app.use(middleware.decodeToken);
+const fb_middleware = require("./middleware/firebase_auth");
+app.use(fb_middleware.decodeToken);
 
 app.use(express.json());
 app.use(cors());
-
-const router = express.Router();
 
 //********* ROUTE IMPORTS**********//
 const user_routes = require("./routes/User.routes");

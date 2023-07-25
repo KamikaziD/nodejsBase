@@ -9,12 +9,14 @@ class Middleware {
           console.log(decodeValue);
           return next();
         }
-        return res.json({ message: "Unauthorized" });
+        return res.status(401).json({ message: "Unauthorized" });
       } catch (e) {
-        return res.json({ message: "Internal Error", error: e.message });
+        return res
+          .status(500)
+          .json({ message: "Internal Error", error: e.message });
       }
     }
-    return res.json({ message: "Unauthorized" });
+    return res.status(401).json({ message: "Unauthorized" });
   }
 }
 module.exports = new Middleware();
