@@ -15,7 +15,7 @@ const io = new Server(server, {
   },
 });
 const fb_middleware = require("./middleware/firebase_auth");
-app.use(fb_middleware.decodeToken);
+// app.use(fb_middleware.decodeToken);
 
 app.use(express.json());
 app.use(cors());

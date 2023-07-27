@@ -12,15 +12,15 @@ datasource db {
 }
 
 model Profile {
-  id             Int     @id @default(autoincrement())
+  id             String  @id @default(cuid())
   bio            String?
   profilePicture String?
-  user           User    @relation(fields: [userId], references: [id])
-  userId         Int     @unique
+  user           User    @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  user_id        String  @unique @map("user_id")
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
+  id       String    @id @default(cuid())
   email    String    @unique
   name     String?
   profile  Profile?
@@ -28,20 +28,24 @@ model User {
 }
 
 model Club {
-  id        Int       @id @default(autoincrement())
-  name      String
-  address   String?
-  telephone String?
-  email     String
-  location  Location?
+  id           String    @id @default(cuid())
+  name         String
+  address      String?
+  city         City      @relation(fields: [city_name, postal_code, country_name], references: [city_name, postal_code, country_name])
+  city_name    String
+  country_name String
+  postal_code  String
+  telephone    String?
+  email        String
+  location     Location?
 }
 
 model Location {
-  id     Int    @id @default(autoincrement())
-  lat    String
-  lng    String
-  club   Club   @relation(fields: [clubId], references: [id])
-  clubId Int    @unique
+  id      Int    @id @default(autoincrement())
+  lat     String
+  lng     String
+  club    Club   @relation(fields: [club_id], references: [id])
+  club_id String @unique @map("club_id")
 }
 
 model Event {
@@ -55,13 +59,32 @@ model Event {
 
 model Reminder {
   id         Int      @id @default(autoincrement())
-  event      Event    @relation(fields: [eventId], references: [id])
-  eventId    Int
-  user       User     @relation(fields: [userId], references: [id])
-  userId     Int      @unique
+  event      Event    @relation(fields: [event_id], references: [id])
+  event_id   Int
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    String   @unique @map("user_id")
   read       Boolean
   trash      Boolean
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
   content    String
+}
+
+model City {
+  id           Int     @id @default(autoincrement())
+  city_name    String
+  postal_code  String
+  country      Country @relation(fields: [country_name], references: [country_name])
+  country_name String  @unique
+  Club         Club[]
+
+  @@unique([city_name, postal_code, country_name])
+}
+
+model Country {
+  id           Int    @id @default(autoincrement())
+  country_name String
+  City         City?
+
+  @@unique([country_name])
 }

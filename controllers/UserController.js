@@ -41,7 +41,10 @@ const getUser = async (req, res) => {
   const userID = req.params.userID;
 
   await prisma.user
-    .findUnique({ where: { id: parseInt(userID) } })
+    .findUnique({
+      where: { id: userID },
+      include: { profile: true },
+    })
     .then(async (data) => {
       res.json({ data: data });
       await prisma.$disconnect();
@@ -58,7 +61,7 @@ const updateUser = async (req, res) => {
   const data = req.body;
 
   await prisma.user
-    .update({ where: { id: parseInt(userID) }, data: data })
+    .update({ where: { id: userID }, data: data })
     .then(async (data) => {
       res.json({ data: data });
       await prisma.$disconnect();
@@ -74,7 +77,7 @@ const deleteUser = async (req, res) => {
   const userID = req.params.userID;
 
   await prisma.user
-    .delete({ where: { id: parseInt(userID) } })
+    .delete({ where: { id: userID }, include: { profile: true } })
     .then(async (data) => {
       res.json({ data: data });
       await prisma.$disconnect();
